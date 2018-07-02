@@ -1,2 +1,2 @@
-# talks
-Propose a talk, rummage through the backlog or share an idea.
+# Our central place to organize Talks
+I will add a lengthy description here ...
