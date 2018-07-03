@@ -1,5 +1,7 @@
+[Meetup](https://www.meetup.com/de-DE/Lambda-Pi/)
+
 # Our central place to organize Talks
-You want to check out the latest talk ideas and proposals and you want to add some? Then this is the place to be. Go to the   [issue tracker](https://github.com/lambda-pi-meetup/talks/issues) and have a blast. You will find proposals for upcoming talks and `want to see` issue. 
+You want to check out the latest talk ideas and proposals and you want to add some? Then this is the place to be. Go to the   [issue tracker](https://github.com/lambda-pi-meetup/talks/issues) and have a blast. You will find proposals for upcoming talks, workshops and `want to see` issue. 
 
 What is a `want to see` (wts), you ask? This is our way to add topic ideas without actually proposing them. So you don't have to give the talk but someone else can pick it up.
 
