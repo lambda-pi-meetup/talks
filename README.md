@@ -8,13 +8,13 @@ There is a topic you want to talk about? Great. Open a new issue and follow thes
 
  1. Find a meaningful title to get people interest.
  2. Select a talk type:
-   - lightning talk: 5min
-   - firehose talk: 15min
-   - long talk: 30min
+     - lightning talk: 5min
+     - firehose talk: 15min
+     - long talk: 30min
  3. Select an audience:
-   - beginner level
-   - intermediate level
-   - advanced level
+     - beginner level
+     - intermediate level
+     - advanced level
  4. Put your talk into categories like Category Theory, Scala, Haskell, Type-level etc.
  5. Write down a short summary of your talk. This will also be used when announcing the next Meetup.
 
