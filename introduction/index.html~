@@ -1,0 +1,333 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="css/reveal.css">
+    <link rel="stylesheet" href="css/theme/white.css" id="theme">
+    <link rel="stylesheet" href="css/presentation.css">
+    
+    <!-- Code syntax highlighting -->
+    <link rel="stylesheet" href="lib/css/vscode.css">
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <section>
+          <section data-background="#363633">
+            <h1>A fist full of types</h1>
+          </section>
+          <section>
+            <h2>Questions we answer today</h2>
+
+            <br/>
+
+            <ul>
+                <li class="fragment fade-in">What is a Type?</li>
+                <li class="fragment fade-in">What are they made of?</li>
+                <li class="fragment fade-in">How do we get dependent types?</li>
+            </ul>
+          </section>
+          <section>
+            <h2>Warning</h2>
+
+            <br/>
+
+            <img src="img/Haskell-Logo.svg" alt="haskell" style="width:400px; border:0">
+          </section>
+        </section>
+        <section>
+          <section data-background="#363633">
+            <h2>What is a type?</h2>
+          </section>
+          <section>
+            <p>Many use it probably every day ...</p>
+            <p class="fragment fade-in">... and <img src="img/heart-symbol.svg" alt="heart" style="width:50px; border:0;margin-bottom:0;"> them ...</p>
+            <p class="fragment fade-in">... but what is it?</p>
+          </section>
+          <section>
+            <h2 style="text-decoration: underline">A type puts constraints on a term.</h2>
+          </section>
+          <section>
+            <h2>State of a value</h2>
+
+            <br/>
+
+            <pre><code class="haskell" data-trim>
+              let a = 0 :: Int
+
+              -- a :: Int
+              -- is a number
+              -- -9223372036854775808 <= a <= 9223372036854775807
+
+              let b = a :: String -- no no
+            </code></pre>
+          </section>
+          <section>
+            <h2>Function parameter restriction</h2>
+
+            <br/>
+
+            <pre><code class="haskell" data-trim>
+                add :: Integer -> Integer -> Integer
+                add a b = a + b
+
+                -- only Integer values can be passed
+                -- the result must be an Integer
+            </code></pre>
+          </section>
+          <section>
+            <h2>Set of operations of a type</h2>
+
+            <br/>
+
+            <pre><code class="haskell" data-trim>
+                -- type classes
+                class Monad m where
+                  return :: a -> ma
+                  (>>=) :: ma -> (a -> m b) -> mb
+
+                -- or by restricting functions (as seen before)
+            </code></pre>
+          </section>
+          <section>
+            <h2>Let's ask the meta question</h2>
+
+            <br/>
+
+            What is a type made of?
+          </section>
+        </section>
+        <section>
+          <section data-background="#363633">
+            <h2>On level up</h2>
+            
+            <br/>
+            <br/>
+
+            <h3>`*`</h3>
+          </section>
+          <section>
+            <h2>The type of a type is called Kind `*`</h2>
+            
+            <br/>
+
+            <h3 class="fragment fade-in" style="text-decoration: underline">Kind is the type of a type constructor</h3>
+          </section>
+          <section>
+            <h2>Data types - type constructor of arity 0</h2>
+
+            <br/>
+
+            <pre><code class="haskell" data-trim>
+                Integer                  -- *
+                Maybe Char               -- *
+                Double -> Double -> Bool -- *
+
+                -- these kinds have inhabitants (values)
+            </code></pre>
+          </section>
+          <section>
+            <h2>Type constructors of arity > 0</h2>
+
+            <br/>
+
+            <pre><code class="haskell" data-trim>
+                -- unary type constructor
+                Maybe        -- * -> *
+                id :: a -> a -- * -> *
+                
+                -- binary type constructor
+                snd :: a -> b -> b  -- * -> * -> *
+
+                -- higher order type constructor
+                return :: Monad m => a -> m a -- (* -> *) -> * -> *
+
+                -- no inhabitants
+            </code></pre>
+          </section>
+          <section>
+            <h2>Types depend on types on steroids</h2>
+
+            <br/>
+
+            <pre><code class="haskell" data-trim>
+                -- Haskell's type families
+                type family   MyMapping a :: *
+                type instance MyMapping Int    = Bool
+                type instance MyMapping String = Double
+            </code></pre>
+          </section>
+          <section>
+            <h2>On our way to dependent types</h2>
+
+            <br/>
+
+            <p>We now have types depending on types aka type constructors ...</p>
+            <p class="fragment fade-in">... but what is missing to make types depend on values?</p>
+          </section>
+          <section>
+            <h2>Start with a problem</h2>
+
+            <br/>
+            
+            A <code class="haskell">Vector</code> with a known size <code class="haskell">n :: Nat</code> and element type <code class="haskell">a</code>.
+
+            <pre><code class="haskell" data-trim>
+                type Vect5 = Vector 5 Int
+                type Vect6 = Vector 6 Int
+
+                Vect5 ~ Vect6 -- has to be false
+            </code></pre>
+          </section>
+          <section>
+            <h2>Limitations of type constructors for `*`</h2>
+
+            <br/>
+
+            <ul>
+                <li>just for kind `type` - too abstract</li>
+                <li>we need to lift data on the type level</li>
+            </ul>
+          </section>
+          <section>
+            <h2>Haskell's data kinds</h2>
+
+            <br/>
+
+            <pre><code class="haskell" data-trim>
+                -- Nat gets promoted to the kind level; Z and S to the type level
+                data Nat = Z | S Nat
+
+                'S('S('Z)) :: Nat -- kind Nat; no inhabitants
+                S(S(Z))    :: *   -- kind *
+            </code></pre>
+          </section>
+          <section>
+            <h2>type families again</h2>
+
+            <br/>
+
+            <pre><code class="haskell" data-trim>
+                infixl 6 :+
+
+                type family   (n :: Nat) :+ (m :: Nat) :: Nat
+                type instance 'Z     :+ m = m
+                type instance ('S n) :+ m = 'S (n :+ m)
+            </code></pre>
+          </section>
+          <section>
+            <h2>We can define the Vector as ...</h2>
+
+            <br/>
+            
+            <pre><code class="haskell" data-trim>
+                infixr 5 :-
+
+                -- n is a index type of kind Nat
+                data Vector (n :: Nat) a where
+                  Nil  :: Vector 'Z a
+                  (:-) :: a -> Vector n a -> Vector ('S n) a
+            </code></pre>
+          </section>
+          <section>
+            <h2>Look at all the guarantees we now have</h2>
+
+            <br/>
+
+            <pre><code class="haskell" data-trim>
+                head :: Vector ('S n) a -> a
+                head (x :- _) = x
+
+                let a = 1 :- 2 :- 3 :- Nil
+
+                head a   -- works; 1
+                head Nil -- no no
+            </code></pre>
+          </section>
+          <section>
+            <h2>or</h2>
+
+            <pre><code class="haskell" data-trim>
+                append :: Vector n a -> Vector m a -> Vector (n :+ m) a
+                append Nil ys       = ys
+                append (x :- xs) ys = x :- append xs ys
+
+                let a = 1 :- Nil
+                let b = 2 :- Nil
+
+                append a b :: Vector S(S(Z)) Int
+            </code></pre>
+          </section>
+          <section>
+            <h2>But, but, but ... what if we need an inhabitant</h2>
+
+            <br/>
+
+            <pre><code class="haskell" data-trim>
+                replicate :: n -> a -> Vector n a
+                -- value of `n`?
+            </code></pre>
+          </section>
+          <section>
+            <h2>singleton to the rescue</h2>
+
+            <br/>
+
+            <pre><code class="haskell" data-trim>
+                data SNat (n :: Nat) where
+                  SZ :: SNat 'Z
+                  SS :: SNat n -> SNat ('S n)
+            </code></pre>
+          </section>
+          <section>
+            <h2>Kinds on the value level</h2>
+
+            <br/>
+
+            <pre><code class="haskell" data-trim>
+                replicate :: SNat n' -> a -> Vector n' a
+                replicate SZ     _ = Nil
+                replicate (SS n) a = a :- replicate n a
+            </code></pre>
+          </section>
+        </section>
+        <section>
+          <section data-background="#363633">
+            <h2>Summary</h2>
+          </section>
+          <section>
+            <ul>
+                <li>types are constraints</li>
+                <li class="fragment fade-in">they are of the type kind `*`</li>
+                <li class="fragment fade-in">kinds are type constructor</li>
+                <li class="fragment fade-in">using type families and data kinds in Haskell gives you dependent types</li>
+            </ul>
+          </section>
+          <section>
+            <h1>Questions?</h1>
+          </section>
+        </section>
+      </div>
+    </div>
+    <script src="lib/js/head.min.js"></script>
+    <script src="js/reveal.js"></script>
+
+    <script>
+       Reveal.initialize({
+           width: "80%",
+           height: "80%",
+           controls: false,
+           progress: false,
+           history: false,
+           center: true,
+
+           transition: 'none', // none/fade/slide/convex/concave/zoom
+
+           dependencies: [
+               { src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+               { src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+               { src: 'plugin/zoom-js/zoom.js', async: true },
+               { src: 'plugin/notes/notes.js', async: true }
+           ]
+       });
+    </script>        
+  </body>
+</html>
